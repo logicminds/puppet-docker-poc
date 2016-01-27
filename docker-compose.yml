@@ -1,0 +1,87 @@
+rootca:
+  image: logicminds/pe-root-ca:3.8
+  hostname: pe-ca_root.localdomain
+  command: /sbin/init
+pm1:
+  image: logicminds/pe-master:3.8
+  hostname: pe-master1.localdomain
+  command: /sbin/init
+  ports:
+   # puppetmaster port
+   - "8140"
+   # main activemq bus
+   - "61613"
+   # activemq broker network
+   - "61616"
+   # clear text puppetdb service
+   - "8080"
+   # ssl puppetdb service
+   - "8081"
+  links:
+   - db
+   - console
+pm2:
+  image: logicminds/pe-master:3.8
+  hostname: pe-master2.localdomain
+  command: /sbin/init
+  ports:
+   # puppetmaster port
+   - "8140"
+   # main activemq bus
+   - "61613"
+   # activemq broker network
+   - "61616"
+   # clear text puppetdb service
+   - "8080"
+   # ssl puppetdb service
+   - "8081"
+  links:
+   - db
+   - console
+
+console:
+  image: logicminds/pe-console:3.8
+  ports:
+   # Main ssl web console port
+   - "443"
+   # classifier port
+   - "4433"
+   # console api port
+   - "4435"
+  links:
+   - db
+  command: /sbin/init
+  hostname: pe-console.localdomain
+db:
+  image: logicminds/pe-puppetdb:3.8
+  command: /bin/bash
+  hostname: pe-puppetdb.localdomain
+  ports:
+   # postgres port
+   - "5432"
+   # clear text puppetdb service
+   - "8080"
+   # ssl puppetdb service
+   - "8081"
+peagent1:
+  image: logicminds/pe-agent:3.8
+  command: /sbin/init
+  hostname: pe-agent1.localdomain
+  links:
+     - pm1
+peagent2:
+  image: logicminds/pe-agent:3.8
+  command: /sbin/init
+  hostname: pe-agent2.localdomain
+  links:
+     - pm1
+peagent3:
+  image: logicminds/pe-agent:3.8
+  command: /sbin/init
+  hostname: pe-agent3.localdomain
+  links:
+     - pm1
+#hub:
+#  image: logicminds/pe:3.8
+#  ports:
+#   - 4435

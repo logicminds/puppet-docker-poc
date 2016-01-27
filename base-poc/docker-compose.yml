@@ -1,0 +1,72 @@
+pm1:
+  image: logicminds/pe:3.8
+  hostname: pe-master1.localdomain
+  command: /sbin/init
+  ports:
+   # ssh port
+   - "22"
+   # puppetmaster port
+   - "8140"
+   # main activemq bus
+   - "61613"
+   # activemq broker network
+   - "61616"
+   # clear text puppetdb service
+   - "8080"
+   # ssl puppetdb service
+   - "8081"
+   - "3000"
+  links:
+   - db
+   - console
+pm2:
+  image: logicminds/pe:3.8
+  hostname: pe-master2.localdomain
+  command: /sbin/init
+  ports:
+   - "22"
+   # puppetmaster port
+   - "8140"
+   # main activemq bus
+   - "61613"
+   # activemq broker network
+   - "61616"
+   # clear text puppetdb service
+   - "8080"
+   # ssl puppetdb service
+   - "8081"
+  links:
+   - db
+   - console
+
+console:
+  image: logicminds/pe:3.8
+  ports:
+   - "22"
+   # Main ssl web console port
+   - "443"
+   # classifier port
+   - "4433"
+   # console api port
+   - "4435"
+  links:
+   - db
+  command: /sbin/init
+  hostname: pe-console.localdomain
+db:
+  image: logicminds/pe:3.8
+  command: /bin/bash
+  hostname: pe-puppetdb.localdomain
+  ports:
+   - "22"
+   # postgres port
+   - "5432"
+   # clear text puppetdb service
+   - "8080"
+   # ssl puppetdb service
+   - "8081"
+
+#hub:
+#  image: logicminds/pe:3.8
+#  ports:
+#   - 4435
